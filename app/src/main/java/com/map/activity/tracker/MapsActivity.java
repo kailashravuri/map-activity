@@ -24,6 +24,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
+import common.map.utils.MapUtils;
+
 import static com.map.activity.tracker.R.id.map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -33,23 +35,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Polyline line;
     private ArrayList<LatLng> routePoints;
     boolean isActivityPaused = false;
+    MapUtils _mapUtils;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        _mapUtils = new MapUtils();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
-
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        askForPermission();
+        _mapUtils.askForPermission(this);
         isActivityPaused = false;
         if(mapService.isTrackingOn){
             mMap.addPolyline(new PolylineOptions()
@@ -87,7 +89,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
         mapService = MapService.getMapService();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            askForPermission();
+            _mapUtils.askForPermission(this);
+            //askForPermission();
         }
         mMap.setMyLocationEnabled(true);
         mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
@@ -123,10 +126,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         routePoints.add(latLng);
 
     }
-    private void askForPermission() {
-        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-        ActivityCompat.requestPermissions(this, permissions,1);
-    }
+     // Codde Moved into Maputils Class
+//    private void askForPermission() {
+//        String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
+//        ActivityCompat.requestPermissions(this, permissions,1);
+//    }
 
 
     protected ServiceConnection mConnection = new ServiceConnection() {
