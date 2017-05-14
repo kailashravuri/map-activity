@@ -1,4 +1,4 @@
-package com.example.ravuriv.map;
+package com.map.activity.tracker;
 
 import android.Manifest;
 import android.content.ComponentName;
@@ -24,7 +24,7 @@ import com.google.android.gms.maps.model.PolylineOptions;
 
 import java.util.ArrayList;
 
-import static com.example.ravuriv.map.R.id.map;
+import static com.map.activity.tracker.R.id.map;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
 

@@ -1,4 +1,4 @@
-package com.example.ravuriv.map;
+package com.map.activity.tracker;
 
 import android.Manifest;
 import android.app.Service;
@@ -13,8 +13,6 @@ import android.os.IBinder;
 import android.location.LocationListener;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
-
-import static com.example.ravuriv.map.R.id.map;
 
 public class MapService extends Service implements LocationListener {
     private static MapService mMapService;

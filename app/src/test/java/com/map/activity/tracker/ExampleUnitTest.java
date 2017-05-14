@@ -1,4 +1,4 @@
-package com.example.ravuriv.map;
+package com.map.activity.tracker;
 
 import org.junit.Test;
 
