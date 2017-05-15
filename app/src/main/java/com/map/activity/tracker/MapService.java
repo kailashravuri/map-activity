@@ -6,15 +6,20 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationListener;
 import android.location.LocationManager;
+import android.os.Binder;
 import android.os.Bundle;
 import android.os.IBinder;
-
-import android.location.LocationListener;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
+import com.google.android.gms.maps.model.LatLng;
+
+import static android.location.LocationManager.NETWORK_PROVIDER;
+
 public class MapService extends Service implements LocationListener {
+    public IBinder mBinder = new MapBinder();
     private static MapService mMapService;
     private Context mContext;
     LocationManager mLocationManager;
@@ -26,9 +31,9 @@ public class MapService extends Service implements LocationListener {
     // Flag for GPS status
     boolean canGetLocation = false;
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 10; // 10 meters
+    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 60 * 1; // 1 minute
+    private static final long MIN_TIME_BW_UPDATES = 1000 * 10; // 1 minute
     double latitude, prevLatitude;
     double longitude, prevLongitude;
     Location mLocation;
@@ -56,10 +61,10 @@ public class MapService extends Service implements LocationListener {
 
             // Getting network status
             isNetworkEnabled = mLocationManager
-                    .isProviderEnabled(LocationManager.NETWORK_PROVIDER);
+                    .isProviderEnabled(NETWORK_PROVIDER);
 
             if (!isGPSEnabled && !isNetworkEnabled) {
-                // No network provider is enabled
+                // TODO: No network provider is enabled
             } else {
                 this.canGetLocation = true;
                 if (isNetworkEnabled) {
@@ -74,13 +79,13 @@ public class MapService extends Service implements LocationListener {
                         return null;
                     }
                     mLocationManager.requestLocationUpdates(
-                            LocationManager.NETWORK_PROVIDER,
+                            NETWORK_PROVIDER,
                             MIN_TIME_BW_UPDATES,
                             MIN_DISTANCE_CHANGE_FOR_UPDATES, this);
                     Log.d("Network", "Network");
                     if (mLocationManager != null) {
                         mLocation = mLocationManager
-                                .getLastKnownLocation(mLocationManager.NETWORK_PROVIDER);
+                                .getLastKnownLocation(NETWORK_PROVIDER);
                         if (mLocation != null) {
                             latitude = mLocation.getLatitude();
                             longitude = mLocation.getLongitude();
@@ -118,8 +123,7 @@ public class MapService extends Service implements LocationListener {
     }
     @Override
     public IBinder onBind(Intent intent) {
-        // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
     }
 
     @Override
@@ -130,7 +134,7 @@ public class MapService extends Service implements LocationListener {
         }
         latitude = location.getLatitude();
         longitude = location.getLongitude();
-        mapsActivity.moveCamera(latitude,longitude);
+        mapsActivity.moveCamera(new LatLng(latitude, longitude));
         if(isTrackingOn && !mapsActivity.isActivityPaused){
             mapsActivity.drawLine(latitude,longitude);
         }
@@ -151,6 +155,9 @@ public class MapService extends Service implements LocationListener {
 
     }
 
-
-
+    private class MapBinder extends Binder {
+        MapService getService() {
+            return MapService.this;
+        }
+    }
 }

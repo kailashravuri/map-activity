@@ -1,20 +1,17 @@
 package com.map.activity.tracker;
 
 import android.Manifest;
-import android.content.ComponentName;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -30,9 +27,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     private GoogleMap mMap;
     MapService mapService;
+    private boolean isMaplLoaded = false;
     private Polyline line;
     private ArrayList<LatLng> routePoints;
     boolean isActivityPaused = false;
+    private static final String LOG_TAG = "map";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,22 +42,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
 
-
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        askForPermission();
+        //askForPermission();
         isActivityPaused = false;
-        if(mapService.isTrackingOn){
+        mapService = MapService.getMapService();
+        /*if(mapService.isTrackingOn){
             mMap.addPolyline(new PolylineOptions()
                     .add(new LatLng(mapService.prevLatitude,mapService.prevLongitude),new LatLng(mapService.latitude,mapService.longitude))
                     .width(5)
                     .color(Color.BLUE));
-        }
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapService.latitude,mapService.longitude),17.0f));
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapService.latitude,mapService.longitude),17.0f));
+        }*/
+        // mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapService.latitude,mapService.longitude),17.0f));
+        //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mapService.latitude,mapService.longitude),17.0f));
 
     }
     @Override
@@ -80,36 +79,45 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        if(MapService.getMapService()==null){
-            Intent intent = new Intent(this,MapService.class);
-            startService(intent);
-            //bindService(intent,mConnection, Context.BIND_AUTO_CREATE);
-        }
-        mapService = MapService.getMapService();
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             askForPermission();
         }
+
         mMap.setMyLocationEnabled(true);
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
         Location location = null;
         if(mapService.canGetLocation) {
             location = mapService.getLocation();
             Log.i("Check Log","can get location");
 
         }
+        final LatLng latLng;
         if(location !=null) {
-            LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            latLng = new LatLng(location.getLatitude(), location.getLongitude());
+            MapsInitializer.initialize(MapsActivity.this);
             mMap.addMarker(new MarkerOptions().position(latLng));
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,17.0f));
-            mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,17.0f));
-            Log.i("Check Log","mark");
+            moveCamera(latLng);
+            mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                @Override
+                public void onMapLoaded() {
+                    isMaplLoaded = true;
+                    moveCamera(latLng);
+                }
+            });
         }
     }
-    public void moveCamera(double lat, double lon){
-        LatLng latLng = new LatLng(lat,lon);
+
+    public void moveCamera(LatLng latLng) {
+        if (mMap == null || !isMaplLoaded) {
+            return;
+        }
+        MapsInitializer.initialize(MapsActivity.this);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng,17.0f));
     }
     public void drawLine(double lat, double lon){
+        if (mMap == null) {
+            return;
+        }
         LatLng latLng = new LatLng(lat,lon);
         PolylineOptions pOptions = new PolylineOptions()
                 .width(5)
@@ -129,15 +137,4 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
 
-    protected ServiceConnection mConnection = new ServiceConnection() {
-        @Override
-        public void onServiceConnected(ComponentName name, IBinder service) {
-
-        }
-
-        @Override
-        public void onServiceDisconnected(ComponentName name) {
-
-        }
-    };
 }
