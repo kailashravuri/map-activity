@@ -31,19 +31,26 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name="com.map.activity.tracker.MapsActivity"
+            android:name=".MapsActivity"
             android:label="@string/title_activity_maps">
+        </activity>
+
+        <service
+            android:name=".MapService"
+            android:enabled="true"
+            android:exported="true" />
+
+        <activity
+            android:name=".LoadingActivity"
+            android:noHistory="true">
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
 
-        <service
-            android:name="com.map.activity.tracker.MapService"
-            android:enabled="true"
-            android:exported="true"></service>
+        </activity>
     </application>
 
 </manifest>
