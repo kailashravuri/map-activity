@@ -45,7 +45,7 @@ public class MapSqliteHelper extends SQLiteOpenHelper {
 
     public Cursor getAllRouteNames() {
         SQLiteDatabase db = this.getReadableDatabase();
-        return db.query(TABLE_NAME, new String[]{COLUMN_ROUTENAME}, null, null, null, null, null);
+        return db.query(TABLE_NAME, new String[]{COLUMN_ROUTENAME, COLUMN_STARTTIME, COLUMN_ENDTIME}, null, null, null, null, null);
     }
 
     public Cursor getRouteVales(String route) {

@@ -71,10 +71,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (isChecked) {
                     mapUtils.setTrackingOn(true);
                     mapUtils.setStartTrackLocation(mapUtils.getLocation());
+                    mapUtils.setStartTime();
 
                 } else {
                     mapUtils.setTrackingOn(false);
                     mapUtils.setEndTrackLocation(mapUtils.getLocation());
+                    mapUtils.setEndTime();
                     if (!mapUtils.isStartEndLocationSame()) {
                         displayDialog(false);
                     } else {
@@ -270,9 +272,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 if (location != null) {
                     latLng = new LatLng(location.getLatitude(), location.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 17.0f));
                 }
             } else {
                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
+                mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
                 for (int i = 0; i < bundlelatLng.size(); i++) {
                     routePoints.add(bundlelatLng.get(i));
                 }

@@ -5,19 +5,17 @@
     android:layout_height="match_parent"
     tools:context="com.map.activity.tracker.MapListActivity">
 
-    <ListView
-        android:layout_width="match_parent"
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/recyclerview"
         android:layout_height="match_parent"
-        android:id="@+id/maplist">
-
-    </ListView>
+        android:layout_width="match_parent" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="no saved data"
         android:id="@+id/listinfo"
-        android:gravity="center"
+        android:layout_gravity="center"
         android:visibility="gone" />
 
 </android.support.constraint.ConstraintLayout>

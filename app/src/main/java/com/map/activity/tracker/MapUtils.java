@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -13,7 +14,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 
 public class MapUtils {
@@ -26,6 +30,8 @@ public class MapUtils {
     private JSONObject jsonObject;
     private Context context;
     private MapService mapService;
+    private String startTime;
+    private String endTime;
 
     public void initializeDB(Context con) {
         context = con;
@@ -47,13 +53,16 @@ public class MapUtils {
         return isTrackingOn;
     }
 
-    public ArrayList<String> getAllRouteList() {
+    public ArrayList<ListData> getAllRouteList() {
         Cursor cursor = mapSqliteHelper.getAllRouteNames();
-        ArrayList<String> list = new ArrayList<>();
+        ArrayList<ListData> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
             cursor.moveToFirst();
             while (!cursor.isAfterLast()) {
-                list.add(cursor.getString(cursor.getColumnIndex(MapSqliteHelper.COLUMN_ROUTENAME)));
+                ListData data = new ListData(cursor.getString(cursor.getColumnIndex(MapSqliteHelper.COLUMN_ROUTENAME)),
+                        cursor.getString(cursor.getColumnIndex(MapSqliteHelper.COLUMN_STARTTIME)),
+                        cursor.getString(cursor.getColumnIndex(MapSqliteHelper.COLUMN_ENDTIME)));
+                list.add(data);
                 cursor.moveToNext();
             }
             return list;
@@ -90,6 +99,27 @@ public class MapUtils {
         return startTrackLoc;
     }
 
+    public void setStartTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        startTime = dateFormat.format(cal.getTime());
+    }
+
+    private String getStartTime() {
+        return startTime;
+    }
+
+    public void setEndTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+        Calendar cal = Calendar.getInstance();
+        endTime = dateFormat.format(cal.getTime());
+    }
+
+    private String getEndTime() {
+        return endTime;
+    }
+
+
     public void setActivityPaused(boolean value) {
         isActivityPaused = value;
     }
@@ -110,12 +140,15 @@ public class MapUtils {
         ContentValues values = new ContentValues();
         values.put(MapSqliteHelper.COLUMN_ROUTENAME, getRouteName());
         values.put(MapSqliteHelper.COLUMN_PATHVALUES, getPathValuesString());
+        values.put(MapSqliteHelper.COLUMN_STARTTIME, getStartTime());
+        values.put(MapSqliteHelper.COLUMN_ENDTIME, getEndTime());
         mapSqliteHelper.insert(values);
         setStartTrackLocation(null);
         setEndTrackLocation(null);
     }
 
     public ArrayList<LatLng> getRouteValues(String s) {
+        Bundle bundle = new Bundle();
         ArrayList<LatLng> latLngs = new ArrayList<>();
         String jsonString;
         Cursor cursor = mapSqliteHelper.getRouteVales(s);
