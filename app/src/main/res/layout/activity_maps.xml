@@ -1,25 +1,24 @@
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:map="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/container"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.map.activity.tracker.MapsActivity"
-    tools:ignore="MergeRootFrame" >
-
-    <android.support.design.widget.AppBarLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+    tools:ignore="MergeRootFrame">
+    <!--
+        <android.support.design.widget.AppBarLayout
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            map:popupTheme="@style/AppTheme.PopupOverlay" />
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay">
 
-    </android.support.design.widget.AppBarLayout>
+            <android.support.v7.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                map:popupTheme="@style/AppTheme.PopupOverlay" />
+
+        </android.support.design.widget.AppBarLayout>-->
 
     <fragment
         android:id="@+id/map"
@@ -31,12 +30,12 @@
             android:id="@+id/mySwitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom|left"
-            android:text="@string/starttracking"
+            android:layout_gravity="bottom|start"
             android:layout_margin="5dp"
-            android:padding="5dp"
             android:background="@color/switchbackground"
-            android:textSize="16dp" />
+            android:padding="5dp"
+            android:text="@string/starttracking"
+            android:textSize="16sp" />
 
     </fragment>
 

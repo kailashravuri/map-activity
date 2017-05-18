@@ -6,5 +6,6 @@
     <string name="off">OFF</string>
     <string name="list">Saved Tracks</string>
     <string name="reload">Reload</string>
+    <string name="nosaveddata">No Saved Data</string>
 
 </resources>

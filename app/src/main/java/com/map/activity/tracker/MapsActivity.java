@@ -44,15 +44,35 @@ import static com.map.activity.tracker.R.id.map;
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String MOVE_CAMERA = "com.map.activity.tracker.MapsActivity.movecamera";
-    public static final int UPDATE_MOVE_CAMERA = 1;
-
-    private GoogleMap mMap;
-    MapService mapService;
-    Polyline line;
+    private static final int UPDATE_MOVE_CAMERA = 1;
     private static ArrayList<LatLng> routePoints = new ArrayList<>();
-    Switch mSwitch;
-    MapUtils mapUtils;
-    ArrayList<LatLng> bundlelatLng;
+    private GoogleMap mMap;
+    private MapService mapService;
+    private Polyline line;
+    private Switch mSwitch;
+    private MapUtils mapUtils;
+    private ArrayList<LatLng> bundlelatLng;
+    private Handler mHandler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            super.handleMessage(msg);
+            if (msg.what == UPDATE_MOVE_CAMERA) {
+                moveMapCursor(new LatLng(mapUtils.getLocation().getLatitude(), mapUtils.getLocation().getLongitude()));
+            }
+        }
+    };
+    private BroadcastReceiver receiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent.getAction().equals(MOVE_CAMERA)) {
+                if (!mapUtils.isActivityPaused()) {
+                    mHandler.sendEmptyMessage(UPDATE_MOVE_CAMERA);
+                } else {
+                    routePoints.add(new LatLng(mapUtils.getLocation().getLatitude(), mapUtils.getLocation().getLongitude()));
+                }
+            }
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,28 +110,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         registerReceiver(receiver, filter);
     }
 
-    BroadcastReceiver receiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(MOVE_CAMERA)) {
-                if (!mapUtils.isActivityPaused()) {
-                    mHandler.sendEmptyMessage(UPDATE_MOVE_CAMERA);
-                } else {
-                    routePoints.add(new LatLng(mapUtils.getLocation().getLatitude(), mapUtils.getLocation().getLongitude()));
-                }
-            }
-        }
-    };
-    Handler mHandler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            if (msg.equals(UPDATE_MOVE_CAMERA)) {
-                moveMapCursor(new LatLng(mapUtils.getLocation().getLatitude(), mapUtils.getLocation().getLongitude()));
-            }
-        }
-    };
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -129,36 +127,38 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             bundlelatLng = new ArrayList<>();
             Bundle bundle = intent.getBundleExtra("extras");
             bundlelatLng = bundle.getParcelableArrayList("routevalues");
-            try {
-                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
-                for (int i = 0; i < bundlelatLng.size(); i++) {
-                    routePoints.add(bundlelatLng.get(i));
-                }
-                Log.i("Check Log", "bundle is not null" + routePoints.size());
-                PolylineOptions pOptions = new PolylineOptions()
-                        .width(5)
-                        .color(Color.BLUE)
-                        .geodesic(true);
-                for (int z = 0; z < routePoints.size(); z++) {
-                    LatLng point = routePoints.get(z);
-                    pOptions.add(point);
-                }
-                line = mMap.addPolyline(pOptions);
-            } catch (Exception e) {
-                MapsInitializer.initialize(MapsActivity.this);
-                mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
-                    @Override
-                    public void onMapLoaded() {
-                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
+            if (bundlelatLng != null) {
+                try {
+                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
+                    for (int i = 0; i < bundlelatLng.size(); i++) {
+                        routePoints.add(bundlelatLng.get(i));
                     }
-                });
+                    Log.i("Check Log", "bundle is not null" + routePoints.size());
+                    PolylineOptions pOptions = new PolylineOptions()
+                            .width(5)
+                            .color(Color.BLUE)
+                            .geodesic(true);
+                    for (int z = 0; z < routePoints.size(); z++) {
+                        LatLng point = routePoints.get(z);
+                        pOptions.add(point);
+                    }
+                    line = mMap.addPolyline(pOptions);
+                } catch (Exception e) {
+                    MapsInitializer.initialize(MapsActivity.this);
+                    mMap.setOnMapLoadedCallback(new GoogleMap.OnMapLoadedCallback() {
+                        @Override
+                        public void onMapLoaded() {
+                            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bundlelatLng.get(0), 17.0f));
+                        }
+                    });
 
+                }
             }
 
         }
     }
 
-    public void displayDialog(boolean isTrue) {
+    private void displayDialog(boolean isTrue) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
         if (isTrue) {
             builder.setTitle("Both start and end locations are same");
@@ -253,7 +253,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        Log.i("Check Log", "onMapready");
         mMap = googleMap;
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             mapUtils.askForPermission(this);
@@ -265,8 +264,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Location location = null;
                 if (mapService.canGetLocation) {
                     location = mapService.getLocation();
-                    Log.i("Check Log", "can get location");
-
                 }
                 final LatLng latLng;
                 if (location != null) {
@@ -280,7 +277,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 for (int i = 0; i < bundlelatLng.size(); i++) {
                     routePoints.add(bundlelatLng.get(i));
                 }
-                Log.i("Check Log", "bundle is not null" + routePoints.size());
                 PolylineOptions pOptions = new PolylineOptions()
                         .width(5)
                         .color(Color.BLUE)
@@ -328,7 +324,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
-    public void moveMapCursor(LatLng latLng) {
+    private void moveMapCursor(LatLng latLng) {
         if (mMap == null) {
             return;
         }

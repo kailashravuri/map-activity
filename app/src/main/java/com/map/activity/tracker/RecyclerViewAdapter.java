@@ -9,14 +9,13 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
-    public ArrayList<ListData> myValues;
+class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
+    private static ClickListener clickListener;
+    private ArrayList<ListData> myValues;
 
-    public RecyclerViewAdapter(ArrayList<ListData> myValues) {
+    RecyclerViewAdapter(ArrayList<ListData> myValues) {
         this.myValues = myValues;
     }
-
-    private static ClickListener clickListener;
 
     @Override
     public MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -36,17 +35,21 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return myValues.size();
     }
 
-    public void setOnItemClickListener(ClickListener clickListener) {
+    void setOnItemClickListener(ClickListener clickListener) {
         RecyclerViewAdapter.clickListener = clickListener;
 
     }
 
-    public static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+    interface ClickListener {
+        void onItemClick(int position, View v);
+    }
+
+    static class MyViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView routeName;
         private TextView startTime;
         private TextView endTime;
 
-        public MyViewHolder(View itemView) {
+        MyViewHolder(View itemView) {
             super(itemView);
             routeName = (TextView) itemView.findViewById(R.id.text_routename);
             startTime = (TextView) itemView.findViewById(R.id.text_starttime);
@@ -58,9 +61,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             clickListener.onItemClick(getAdapterPosition(), v);
 
         }
-    }
-
-    public interface ClickListener {
-        void onItemClick(int position, View v);
     }
 }

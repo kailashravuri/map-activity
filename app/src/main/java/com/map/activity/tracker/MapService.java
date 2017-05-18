@@ -17,23 +17,23 @@ import android.util.Log;
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
 public class MapService extends Service implements LocationListener {
-    public IBinder mBinder = new MapBinder();
-    private Context mContext;
-    LocationManager mLocationManager;
-    // Flag for GPS status
-    boolean isGPSEnabled = false;
-    // Flag for network status
-    boolean isNetworkEnabled = false;
-    // Flag for GPS status
-    boolean canGetLocation = false;
     // The minimum distance to change Updates in meters
     private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 0.25F; // 10 meters
     // The minimum time between updates in milliseconds
     private static final long MIN_TIME_BW_UPDATES = 1000; // 1 minute
-    double latitude;
-    double longitude;
-    Location mLocation;
-    MapUtils mapUtils;
+    // Flag for GPS status
+    boolean canGetLocation = false;
+    private IBinder mBinder = new MapBinder();
+    private Context mContext;
+    private LocationManager mLocationManager;
+    // Flag for GPS status
+    private boolean isGPSEnabled = false;
+    // Flag for network status
+    private boolean isNetworkEnabled = false;
+    private double latitude;
+    private double longitude;
+    private Location mLocation;
+    private MapUtils mapUtils;
 
     public MapService() {
     }
@@ -142,7 +142,7 @@ public class MapService extends Service implements LocationListener {
 
     }
 
-    public class MapBinder extends Binder {
+    class MapBinder extends Binder {
         MapService getService() {
             return MapService.this;
         }

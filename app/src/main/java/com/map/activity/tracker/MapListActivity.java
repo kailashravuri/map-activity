@@ -14,8 +14,8 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 
 public class MapListActivity extends AppCompatActivity implements RecyclerViewAdapter.ClickListener {
-    MapUtils mapUtils;
-    ArrayList<ListData> arrayList = new ArrayList<>();
+    private MapUtils mapUtils;
+    private ArrayList<ListData> arrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

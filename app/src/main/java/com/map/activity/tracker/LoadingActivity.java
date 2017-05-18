@@ -11,26 +11,8 @@ import android.util.Log;
 
 public class LoadingActivity extends AppCompatActivity {
     private MapService mapService;
-    MapUtils mapUtils = MapUtils.getInstance();
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_loading);
-        Log.i("Check Log", "oncreate");
-
-        if (mapService == null) {
-            Log.i("Check Log", "oncreate if");
-            Intent intent = new Intent(this, MapService.class);
-            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
-        } else {
-            Log.i("Check Log", "oncreate else");
-            Intent intent = new Intent(LoadingActivity.this, MapsActivity.class);
-            startActivity(intent);
-        }
-    }
-
-    protected ServiceConnection mConnection = new ServiceConnection() {
+    private MapUtils mapUtils = MapUtils.getInstance();
+    private ServiceConnection mConnection = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i("Check Log", "onserviceconnected");
@@ -48,4 +30,21 @@ public class LoadingActivity extends AppCompatActivity {
 
         }
     };
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_loading);
+        Log.i("Check Log", "oncreate");
+
+        if (mapService == null) {
+            Log.i("Check Log", "oncreate if");
+            Intent intent = new Intent(this, MapService.class);
+            bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
+        } else {
+            Log.i("Check Log", "oncreate else");
+            Intent intent = new Intent(LoadingActivity.this, MapsActivity.class);
+            startActivity(intent);
+        }
+    }
 }

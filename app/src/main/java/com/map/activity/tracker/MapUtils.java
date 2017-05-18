@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
-import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 
 import com.google.android.gms.maps.model.LatLng;
@@ -18,42 +17,41 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Locale;
 
 
-public class MapUtils {
+class MapUtils {
+    private static MapSqliteHelper mapSqliteHelper;
+    private static MapUtils mapUtils;
     private boolean isTrackingOn = false;
     private boolean isActivityPaused = false;
-    private static MapSqliteHelper mapSqliteHelper;
     private Location location, startTrackLoc, endTrackLoc;
     private String routeName;
-    private static MapUtils mapUtils;
     private JSONObject jsonObject;
-    private Context context;
     private MapService mapService;
     private String startTime;
     private String endTime;
 
-    public void initializeDB(Context con) {
-        context = con;
-        mapSqliteHelper = new MapSqliteHelper(con);
-    }
-
-    public static MapUtils getInstance() {
+    static MapUtils getInstance() {
         if (mapUtils == null) {
             mapUtils = new MapUtils();
         }
         return mapUtils;
     }
 
-    public void setTrackingOn(boolean value) {
-        isTrackingOn = value;
+    void initializeDB(Context con) {
+        mapSqliteHelper = new MapSqliteHelper(con);
     }
 
-    public boolean getTrackingOn() {
+    boolean getTrackingOn() {
         return isTrackingOn;
     }
 
-    public ArrayList<ListData> getAllRouteList() {
+    void setTrackingOn(boolean value) {
+        isTrackingOn = value;
+    }
+
+    ArrayList<ListData> getAllRouteList() {
         Cursor cursor = mapSqliteHelper.getAllRouteNames();
         ArrayList<ListData> list = new ArrayList<>();
         if (cursor.getCount() > 0) {
@@ -71,23 +69,23 @@ public class MapUtils {
         return null;
     }
 
-    public boolean isStartEndLocationSame() {
+    boolean isStartEndLocationSame() {
         return (getStartTrackLoc().getLatitude() == getEndTrackLoc().getLatitude()) && getStartTrackLoc().getLongitude() == getEndTrackLoc().getLongitude();
     }
 
-    public void setCurrentLocation(Location l) {
+    void setCurrentLocation(Location l) {
         this.location = l;
     }
 
-    public Location getLocation() {
+    Location getLocation() {
         return location;
     }
 
-    public void setStartTrackLocation(Location l) {
+    void setStartTrackLocation(Location l) {
         startTrackLoc = l;
     }
 
-    public void setEndTrackLocation(Location endLoc) {
+    void setEndTrackLocation(Location endLoc) {
         endTrackLoc = endLoc;
     }
 
@@ -99,8 +97,8 @@ public class MapUtils {
         return startTrackLoc;
     }
 
-    public void setStartTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    void setStartTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.UK);
         Calendar cal = Calendar.getInstance();
         startTime = dateFormat.format(cal.getTime());
     }
@@ -109,8 +107,8 @@ public class MapUtils {
         return startTime;
     }
 
-    public void setEndTime() {
-        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
+    void setEndTime() {
+        DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.UK);
         Calendar cal = Calendar.getInstance();
         endTime = dateFormat.format(cal.getTime());
     }
@@ -119,16 +117,15 @@ public class MapUtils {
         return endTime;
     }
 
-
-    public void setActivityPaused(boolean value) {
-        isActivityPaused = value;
-    }
-
-    public boolean isActivityPaused() {
+    boolean isActivityPaused() {
         return isActivityPaused;
     }
 
-    public void setRoutename(String s) {
+    void setActivityPaused(boolean value) {
+        isActivityPaused = value;
+    }
+
+    void setRoutename(String s) {
         routeName = s;
     }
 
@@ -136,7 +133,7 @@ public class MapUtils {
         return routeName;
     }
 
-    public void insertValuestoDB() {
+    void insertValuestoDB() {
         ContentValues values = new ContentValues();
         values.put(MapSqliteHelper.COLUMN_ROUTENAME, getRouteName());
         values.put(MapSqliteHelper.COLUMN_PATHVALUES, getPathValuesString());
@@ -147,8 +144,7 @@ public class MapUtils {
         setEndTrackLocation(null);
     }
 
-    public ArrayList<LatLng> getRouteValues(String s) {
-        Bundle bundle = new Bundle();
+    ArrayList<LatLng> getRouteValues(String s) {
         ArrayList<LatLng> latLngs = new ArrayList<>();
         String jsonString;
         Cursor cursor = mapSqliteHelper.getRouteVales(s);
@@ -172,7 +168,7 @@ public class MapUtils {
         return latLngs;
     }
 
-    public void savePathValuesToJson(ArrayList<LatLng> points) throws JSONException {
+    void savePathValuesToJson(ArrayList<LatLng> points) throws JSONException {
         jsonObject = new JSONObject();
         ArrayList<String> list = new ArrayList<>();
         for (int i = 0; i < points.size(); i++) {
@@ -187,9 +183,8 @@ public class MapUtils {
         return s;
     }
 
-    public String latlngToString(LatLng latLng) {
-        String s = latLng.latitude + "/" + latLng.longitude;
-        return s;
+    private String latlngToString(LatLng latLng) {
+        return (latLng.latitude + "/" + latLng.longitude);
     }
 
     private LatLng stringToLatlng(String s) {
@@ -199,16 +194,16 @@ public class MapUtils {
         return new LatLng(latitude, longitude);
     }
 
-    public void askForPermission(MapsActivity context) {
+    void askForPermission(MapsActivity context) {
         String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         ActivityCompat.requestPermissions(context, permissions, 1);
     }
 
-    public void setService(MapService service) {
-        mapService = service;
+    MapService getService() {
+        return mapService;
     }
 
-    public MapService getService() {
-        return mapService;
+    void setService(MapService service) {
+        mapService = service;
     }
 }

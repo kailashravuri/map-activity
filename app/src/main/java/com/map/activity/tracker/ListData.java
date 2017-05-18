@@ -1,25 +1,25 @@
 package com.map.activity.tracker;
 
-public class ListData {
-    String routeName;
-    String startTime;
-    String endTime;
+class ListData {
+    private String routeName;
+    private String startTime;
+    private String endTime;
 
-    public ListData(String routeName, String startTime, String endTime) {
+    ListData(String routeName, String startTime, String endTime) {
         this.routeName = routeName;
         this.startTime = startTime;
         this.endTime = endTime;
     }
 
-    public String getRouteName() {
+    String getRouteName() {
         return routeName;
     }
 
-    public String getStartTime() {
+    String getStartTime() {
         return startTime;
     }
 
-    public String getEndTime() {
+    String getEndTime() {
         return endTime;
     }
 
