@@ -14,30 +14,26 @@ import android.os.IBinder;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import static android.location.LocationManager.NETWORK_PROVIDER;
 
 public class MapService extends Service implements LocationListener {
     public IBinder mBinder = new MapBinder();
-    private static MapService mMapService;
     private Context mContext;
     LocationManager mLocationManager;
     // Flag for GPS status
     boolean isGPSEnabled = false;
-    boolean isTrackingOn = true;
     // Flag for network status
     boolean isNetworkEnabled = false;
     // Flag for GPS status
     boolean canGetLocation = false;
     // The minimum distance to change Updates in meters
-    private static final long MIN_DISTANCE_CHANGE_FOR_UPDATES = 1; // 10 meters
+    private static final float MIN_DISTANCE_CHANGE_FOR_UPDATES = 0.25F; // 10 meters
     // The minimum time between updates in milliseconds
-    private static final long MIN_TIME_BW_UPDATES = 1000 * 10; // 1 minute
-    double latitude, prevLatitude;
-    double longitude, prevLongitude;
+    private static final long MIN_TIME_BW_UPDATES = 1000; // 1 minute
+    double latitude;
+    double longitude;
     Location mLocation;
-    MapsActivity mapsActivity;
+    MapUtils mapUtils;
 
     public MapService() {
     }
@@ -45,10 +41,10 @@ public class MapService extends Service implements LocationListener {
     @Override
     public void onCreate() {
         super.onCreate();
-        mMapService = this;
         mContext = this;
         getLocation();
-        mapsActivity = new MapsActivity();
+        mapUtils = MapUtils.getInstance();
+        mapUtils.initializeDB(getApplicationContext());
     }
     public Location getLocation() {
         try {
@@ -118,9 +114,6 @@ public class MapService extends Service implements LocationListener {
 
         return mLocation;
     }
-    public static MapService getMapService(){
-        return mMapService;
-    }
     @Override
     public IBinder onBind(Intent intent) {
         return mBinder;
@@ -128,16 +121,10 @@ public class MapService extends Service implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if(!mapsActivity.isActivityPaused){
-            prevLatitude = latitude;
-            prevLongitude = longitude;
-        }
-        latitude = location.getLatitude();
-        longitude = location.getLongitude();
-        mapsActivity.moveCamera(new LatLng(latitude, longitude));
-        if(isTrackingOn && !mapsActivity.isActivityPaused){
-            mapsActivity.drawLine(latitude,longitude);
-        }
+        mapUtils.setCurrentLocation(location);
+        Intent intent = new Intent();
+        intent.setAction(MapsActivity.MOVE_CAMERA);
+        sendBroadcast(intent);
     }
 
     @Override
@@ -155,7 +142,7 @@ public class MapService extends Service implements LocationListener {
 
     }
 
-    private class MapBinder extends Binder {
+    public class MapBinder extends Binder {
         MapService getService() {
             return MapService.this;
         }

@@ -10,6 +10,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
 public class LoadingActivity extends AppCompatActivity {
+    private MapService mapService;
+    MapUtils mapUtils = MapUtils.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -17,7 +19,7 @@ public class LoadingActivity extends AppCompatActivity {
         setContentView(R.layout.activity_loading);
         Log.i("Check Log", "oncreate");
 
-        if (MapService.getMapService() == null) {
+        if (mapService == null) {
             Log.i("Check Log", "oncreate if");
             Intent intent = new Intent(this, MapService.class);
             bindService(intent, mConnection, Context.BIND_AUTO_CREATE);
@@ -25,7 +27,6 @@ public class LoadingActivity extends AppCompatActivity {
             Log.i("Check Log", "oncreate else");
             Intent intent = new Intent(LoadingActivity.this, MapsActivity.class);
             startActivity(intent);
-            finish();
         }
     }
 
@@ -33,12 +34,17 @@ public class LoadingActivity extends AppCompatActivity {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             Log.i("Check Log", "onserviceconnected");
+            MapService.MapBinder mapBinder = (MapService.MapBinder) service;
+            mapService = mapBinder.getService();
+            mapUtils.setService(mapService);
             Intent intent = new Intent(LoadingActivity.this, MapsActivity.class);
             startActivity(intent);
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+            mapService = null;
+            mapUtils.setService(null);
 
         }
     };

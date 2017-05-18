@@ -7,18 +7,37 @@
     tools:context="com.map.activity.tracker.MapsActivity"
     tools:ignore="MergeRootFrame" >
 
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/AppTheme.AppBarOverlay">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            map:popupTheme="@style/AppTheme.PopupOverlay" />
+
+    </android.support.design.widget.AppBarLayout>
+
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:clickable="true"
-        android:src="@android:drawable/ic_menu_add" />
+        android:layout_height="match_parent">
+
+        <Switch
+            android:id="@+id/mySwitch"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|left"
+            android:text="@string/starttracking"
+            android:layout_margin="5dp"
+            android:padding="5dp"
+            android:background="@color/switchbackground"
+            android:textSize="16dp" />
+
+    </fragment>
 
 </android.support.design.widget.CoordinatorLayout>

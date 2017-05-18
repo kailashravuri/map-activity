@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">Map</string>
     <string name="title_activity_maps">Map</string>
-    <string name="track">Track</string>
+    <string name="starttracking">Start Tracking</string>
     <string name="on">ON</string>
     <string name="off">OFF</string>
-    <string name="list">LIST</string>
+    <string name="list">List</string>
+    <string name="reload">Reload</string>
 
 </resources>
