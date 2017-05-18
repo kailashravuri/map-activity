@@ -44,7 +44,6 @@ public class MapListActivity extends AppCompatActivity {
                     Intent intent = new Intent(MapListActivity.this, MapsActivity.class);
                     intent.putExtra("extras", bundle);
                     startActivity(intent);
-
                 }
             });
         } else {
