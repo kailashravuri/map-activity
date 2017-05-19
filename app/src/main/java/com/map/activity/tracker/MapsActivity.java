@@ -176,9 +176,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 public void onClick(DialogInterface dialog, int which) {
                     mapUtils.setStartTrackLocation(null);
                     mapUtils.setEndTrackLocation(null);
+                    reloadMap();
                 }
             });
             final AlertDialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
         } else {
             builder.setTitle("Give some name to save this route");
@@ -212,6 +214,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 }
             });
             final AlertDialog dialog = builder.create();
+            dialog.setCanceledOnTouchOutside(false);
             dialog.show();
             dialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
             input.addTextChangedListener(new TextWatcher() {
