@@ -5,8 +5,9 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
-
+//sqlitehelper class to create and save data into sqlite database
 class MapSqliteHelper extends SQLiteOpenHelper {
     static final String COLUMN_PATHVALUES = "pathvalues";
     static final String COLUMN_ROUTENAME = "routename";
@@ -31,17 +32,20 @@ class MapSqliteHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE);
     }
 
+    //insert values to database
     long insert(ContentValues values) {
+        Log.i("Check Log", "sql helper insert");
         SQLiteDatabase db = this.getWritableDatabase();
         return db.insert(TABLE_NAME, null, values);
     }
 
-
+    //to get all routenames, start time and end time to display on list.
     Cursor getAllRouteNames() {
         SQLiteDatabase db = this.getReadableDatabase();
         return db.query(TABLE_NAME, new String[]{COLUMN_ROUTENAME, COLUMN_STARTTIME, COLUMN_ENDTIME}, null, null, null, null, null);
     }
 
+    //to get route values for respected route.
     Cursor getRouteVales(String route) {
         SQLiteDatabase db = this.getReadableDatabase();
         String WHERE = COLUMN_ROUTENAME + " =? ";

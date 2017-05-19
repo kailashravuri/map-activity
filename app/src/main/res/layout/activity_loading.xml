@@ -3,14 +3,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".LoadingActivity"
-    android:background="@color/colorAccent">
+    android:background="@color/switchbackground"
+    tools:context=".LoadingActivity">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:text="Loading..."
-        android:textSize="16dp" />
+        android:text="@string/loading"
+        android:textSize="16sp" />
 
 </android.support.constraint.ConstraintLayout>

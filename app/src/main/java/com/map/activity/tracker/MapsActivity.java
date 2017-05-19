@@ -41,6 +41,7 @@ import java.util.ArrayList;
 
 import static com.map.activity.tracker.R.id.map;
 
+/*MapsActivity to display map view*/
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     public static final String MOVE_CAMERA = "com.map.activity.tracker.MapsActivity.movecamera";
@@ -52,6 +53,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private Switch mSwitch;
     private MapUtils mapUtils;
     private ArrayList<LatLng> bundlelatLng;
+    //handler to handle location changed requests sequentially.
     private Handler mHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -61,6 +63,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             }
         }
     };
+    //Receiver to receive move camers intents when location changed and it will pass messages to handlee.
     private BroadcastReceiver receiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -84,6 +87,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(map);
         mapFragment.getMapAsync(this);
+        //switch to on or off tracking
         mSwitch = (Switch) findViewById(R.id.mySwitch);
         mSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -123,6 +127,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+        //to display route when respected saved route is selected from saved list.
         if (intent.hasExtra("extras") && mMap != null) {
             bundlelatLng = new ArrayList<>();
             Bundle bundle = intent.getBundleExtra("extras");
@@ -158,6 +163,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    /*to display dialog when tracking stopped
+    * if start and end location are same it will display a dialog with message
+    * otherwise it will display another dialog with ok, cancel buttons to save data
+    * into database and it will save data into database*/
     private void displayDialog(boolean isTrue) {
         AlertDialog.Builder builder = new AlertDialog.Builder(MapsActivity.this);
         if (isTrue) {
@@ -300,6 +309,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     }
 
+    //to refresh map and it will display current location
     private void reloadMap() {
         Location location = null;
         if(mapService.canGetLocation) {
@@ -324,6 +334,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+    //to move cursor when on location changed and if tracking is on it will draw the line.
     private void moveMapCursor(LatLng latLng) {
         if (mMap == null) {
             return;
@@ -351,6 +362,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return true;
     }
 
+    //Menu with options saved routes and reload options.
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {

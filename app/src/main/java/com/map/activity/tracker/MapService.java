@@ -46,6 +46,8 @@ public class MapService extends Service implements LocationListener {
         mapUtils = MapUtils.getInstance();
         mapUtils.initializeDB(getApplicationContext());
     }
+
+    //To get current location when activity launched.
     public Location getLocation() {
         try {
             mLocationManager = (LocationManager) mContext
@@ -119,6 +121,7 @@ public class MapService extends Service implements LocationListener {
         return mBinder;
     }
 
+    //callback when location changed
     @Override
     public void onLocationChanged(Location location) {
         mapUtils.setCurrentLocation(location);

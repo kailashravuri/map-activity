@@ -13,6 +13,7 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
 
+//List activity to display list of card view with saved routes information.
 public class MapListActivity extends AppCompatActivity implements RecyclerViewAdapter.ClickListener {
     private MapUtils mapUtils;
     private ArrayList<ListData> arrayList = new ArrayList<>();
@@ -22,15 +23,14 @@ public class MapListActivity extends AppCompatActivity implements RecyclerViewAd
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map_list);
         mapUtils = MapUtils.getInstance();
-        //ListView listView = (ListView) findViewById(R.id.maplist);
         RecyclerView listView = (RecyclerView) findViewById(R.id.recyclerview);
         TextView textView = (TextView) findViewById(R.id.listinfo);
 
         arrayList = mapUtils.getAllRouteList();
+        Log.i("Check Log", "list activity" + arrayList.size());
         if (arrayList != null) {
             textView.setVisibility(View.GONE);
             listView.setVisibility(View.VISIBLE);
-            // ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, arrayList);
             RecyclerViewAdapter recyclerViewAdapter = new RecyclerViewAdapter(arrayList);
             recyclerViewAdapter.setOnItemClickListener(this);
             listView.setHasFixedSize(true);
@@ -38,27 +38,14 @@ public class MapListActivity extends AppCompatActivity implements RecyclerViewAd
             LinearLayoutManager llm = new LinearLayoutManager(this);
             llm.setOrientation(LinearLayoutManager.VERTICAL);
             listView.setLayoutManager(llm);
-            /*listView.addO
-            listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    ArrayList<LatLng> list;
-                    list = mapUtils.getRouteValues(arrayList.get(position));
-                    Log.i("Check Log", "in list activity" + list.size());
 
-                    Bundle bundle = new Bundle();
-                    bundle.putParcelableArrayList("routevalues", list);
-                    Intent intent = new Intent(MapListActivity.this, MapsActivity.class);
-                    intent.putExtra("extras", bundle);
-                    startActivity(intent);
-                }
-            });*/
         } else {
             listView.setVisibility(View.GONE);
             textView.setVisibility(View.VISIBLE);
         }
     }
 
+    //starting activity when item clicked to display saved route.
     @Override
     public void onItemClick(int position, View v) {
         ArrayList<LatLng> list;

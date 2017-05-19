@@ -1,5 +1,6 @@
 package com.map.activity.tracker;
 
+/* class to create list view item values*/
 class ListData {
     private String routeName;
     private String startTime;

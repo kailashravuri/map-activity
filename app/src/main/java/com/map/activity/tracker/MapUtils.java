@@ -6,6 +6,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.location.Location;
 import android.support.v4.app.ActivityCompat;
+import android.util.Log;
 
 import com.google.android.gms.maps.model.LatLng;
 
@@ -19,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Locale;
 
-
+//Utils class for setter and getter methods.
 class MapUtils {
     private static MapSqliteHelper mapSqliteHelper;
     private static MapUtils mapUtils;
@@ -39,6 +40,7 @@ class MapUtils {
         return mapUtils;
     }
 
+    //initialize database to create sqlite database.
     void initializeDB(Context con) {
         mapSqliteHelper = new MapSqliteHelper(con);
     }
@@ -51,6 +53,7 @@ class MapUtils {
         isTrackingOn = value;
     }
 
+    //Convert cursor values to arralist of listdata
     ArrayList<ListData> getAllRouteList() {
         Cursor cursor = mapSqliteHelper.getAllRouteNames();
         ArrayList<ListData> list = new ArrayList<>();
@@ -70,11 +73,11 @@ class MapUtils {
     }
 
     boolean isStartEndLocationSame() {
-        return (getStartTrackLoc().getLatitude() == getEndTrackLoc().getLatitude()) && getStartTrackLoc().getLongitude() == getEndTrackLoc().getLongitude();
+        return (getStartTrackLoc() == null) && (getEndTrackLoc() == null) || (getStartTrackLoc().getLatitude() == getEndTrackLoc().getLatitude()) && getStartTrackLoc().getLongitude() == getEndTrackLoc().getLongitude();
     }
 
     void setCurrentLocation(Location l) {
-        this.location = l;
+        location = l;
     }
 
     Location getLocation() {
@@ -97,6 +100,7 @@ class MapUtils {
         return startTrackLoc;
     }
 
+    //to set start time of tracking
     void setStartTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.UK);
         Calendar cal = Calendar.getInstance();
@@ -107,6 +111,7 @@ class MapUtils {
         return startTime;
     }
 
+    //to set end time of tracking
     void setEndTime() {
         DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.UK);
         Calendar cal = Calendar.getInstance();
@@ -133,17 +138,21 @@ class MapUtils {
         return routeName;
     }
 
+    //To create contentvalues object to store values into database.
     void insertValuestoDB() {
+        Log.i("Check Log", "map utils insert");
         ContentValues values = new ContentValues();
         values.put(MapSqliteHelper.COLUMN_ROUTENAME, getRouteName());
         values.put(MapSqliteHelper.COLUMN_PATHVALUES, getPathValuesString());
         values.put(MapSqliteHelper.COLUMN_STARTTIME, getStartTime());
         values.put(MapSqliteHelper.COLUMN_ENDTIME, getEndTime());
-        mapSqliteHelper.insert(values);
+        long l = mapSqliteHelper.insert(values);
+        Log.i("Check Log", "map utils insert" + l);
         setStartTrackLocation(null);
         setEndTrackLocation(null);
     }
 
+    //convert route values cursor to arraylist of latlng
     ArrayList<LatLng> getRouteValues(String s) {
         ArrayList<LatLng> latLngs = new ArrayList<>();
         String jsonString;
@@ -168,6 +177,7 @@ class MapUtils {
         return latLngs;
     }
 
+    //convert array of latlng values to jsonobject.
     void savePathValuesToJson(ArrayList<LatLng> points) throws JSONException {
         jsonObject = new JSONObject();
         ArrayList<String> list = new ArrayList<>();
@@ -177,16 +187,19 @@ class MapUtils {
         jsonObject.put("pathvalues", new JSONArray(list));
     }
 
+    //convert jsonobject to string.
     private String getPathValuesString() {
         String s = jsonObject.toString();
         jsonObject = null;
         return s;
     }
 
+    //convert latlng to string
     private String latlngToString(LatLng latLng) {
         return (latLng.latitude + "/" + latLng.longitude);
     }
 
+    //convert string to latlng
     private LatLng stringToLatlng(String s) {
         String[] str = s.split("/");
         double latitude = Double.parseDouble(str[0]);
@@ -194,6 +207,7 @@ class MapUtils {
         return new LatLng(latitude, longitude);
     }
 
+    //requesting manifest permissons
     void askForPermission(MapsActivity context) {
         String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
         ActivityCompat.requestPermissions(context, permissions, 1);

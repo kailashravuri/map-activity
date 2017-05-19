@@ -9,6 +9,7 @@ import android.os.IBinder;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 
+//loading activity to bind service.
 public class LoadingActivity extends AppCompatActivity {
     private MapService mapService;
     private MapUtils mapUtils = MapUtils.getInstance();

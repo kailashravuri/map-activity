@@ -2,6 +2,7 @@ package com.map.activity.tracker;
 
 
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+//Recycler adapter to display list of cardviews
 class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyViewHolder> {
     private static ClickListener clickListener;
     private ArrayList<ListData> myValues;
@@ -40,6 +42,7 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyVie
 
     }
 
+    //interface to provide onitem click functionality to recycler view.
     interface ClickListener {
         void onItemClick(int position, View v);
     }
@@ -54,10 +57,12 @@ class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.MyVie
             routeName = (TextView) itemView.findViewById(R.id.text_routename);
             startTime = (TextView) itemView.findViewById(R.id.text_starttime);
             endTime = (TextView) itemView.findViewById(R.id.text_endtime);
+            itemView.setOnClickListener(this);
         }
 
         @Override
         public void onClick(View v) {
+            Log.i("Check log", "onClick");
             clickListener.onItemClick(getAdapterPosition(), v);
 
         }
